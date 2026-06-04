@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RZTI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neutral: {
+                            50: '#FAFAFA',
+                            100: '#F5F5F5',
+                            200: '#E5E5E5',
+                            300: '#D4D4D4',
+                            400: '#A3A3A3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #FAFAFA;
+            color: #171717;
+        }
+
+        /* Minimalist Panel Classes */
+        .glass-panel {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E5;
+        }
+
+        .glass-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E5;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .glass-btn {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E5;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-btn:hover {
+            background: #F5F5F5;
+            border-color: #171717;
+            transform: translateY(-1px);
+        }
+
+        /* Minimal Animations */
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.50, 1) forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s cubic-bezier(0.25, 1, 0.50, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+        }
+
+        /* Ensure smooth progress bar transition */
+        .progress-bar-fill {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-6 px-4 select-none">
+
+    <!-- PC Adaptor Container -->
+    <div class="w-full max-w-[480px] min-h-[80vh] glass-panel rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between relative">
+        
+        <!-- MAIN HEADER / IDENTITY -->
+        <header class="pt-8 px-8 flex justify-center items-center z-10">
+            <span class="text-[10px] tracking-[0.25em] text-neutral-400 font-medium uppercase">RZTI</span>
+        </header>
+
+        <!-- APP CONTAINER FOR SCREENS -->
+        <main class="flex-grow flex flex-col justify-center px-8 py-4 z-10">
+            
+            <!-- 1. WELCOME SCREEN -->
+            <div id="screen-welcome" class="space-y-16 fade-in flex flex-col justify-between h-full py-12">
+                <div class="space-y-3 text-center pt-12">
+                    <h1 class="text-5xl font-light tracking-[0.25em] text-neutral-900 translate-x-[0.125em]">RZTI</h1>
+                    <p class="text-xs tracking-[0.15em] text-neutral-400 uppercase font-normal">
+                        Rosy Zhao Type Indicator
+                    </p>
+                </div>
+
+                <div class="space-y-8 flex flex-col items-center">
+                    <button id="btn-start" class="w-full py-3.5 rounded-lg bg-neutral-900 text-white text-xs font-medium tracking-[0.2em] hover:bg-neutral-800 active:scale-95 transition-all text-center block">
+                        开启测试
+                    </button>
+                    <div class="text-center pt-2">
+                        <span class="text-[10px] text-neutral-400 tracking-widest uppercase">
+                            参考MBTI设计
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. QUIZ SCREEN (Hidden initially) -->
+            <div id="screen-quiz" class="hidden space-y-6 h-full flex flex-col justify-between">
+                <!-- Progress Indicator -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-[10px] text-neutral-400 tracking-wider uppercase font-medium px-1">
+                        <span id="quiz-progress-text">进度: 1 / 30</span>
+                        <span>ANALYZING</span>
+                    </div>
+                    <!-- Outer progress bar -->
+                    <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden border border-neutral-200">
+                        <!-- Progress fill -->
+                        <div id="quiz-progress-fill" class="progress-bar-fill h-full bg-neutral-900 w-[3.33%] rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Card -->
+                <div class="glass-card rounded-xl p-6 min-h-[360px] flex flex-col justify-between shadow-none">
+                    <div class="space-y-3">
+                        <div id="quiz-question-id" class="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">
+                            QUESTION 01
+                        </div>
+                        <h3 id="quiz-question-title" class="text-sm font-medium text-neutral-800 leading-relaxed">
+                            Q1. 
+                        </h3>
+                    </div>
+
+                    <!-- Options Container -->
+                    <div id="quiz-options" class="space-y-2.5 mt-6">
+                        <!-- Dynamic Options injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. LOADING SCREEN (Hidden initially) -->
+            <div id="screen-loading" class="hidden space-y-6 text-center py-20 h-full flex flex-col justify-center items-center">
+                <div class="relative w-12 h-12">
+                    <div class="absolute inset-0 rounded-full border-2 border-neutral-100 border-t-neutral-900 animate-spin"></div>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="text-xs tracking-wider text-neutral-400 uppercase">
+                        正在生成你的专属画像...
+                    </h3>
+                </div>
+            </div>
+
+            <!-- 4. RESULT SCREEN (Hidden initially) -->
+            <div id="screen-result" class="hidden space-y-6 py-2 overflow-y-auto max-h-[75vh] px-1">
+                
+                <!-- Result Card -->
+                <div class="glass-card rounded-xl p-6 shadow-none border border-neutral-200">
+                    <div class="text-center space-y-3">
+                        <span class="text-[10px] font-medium tracking-widest text-neutral-400 uppercase">
+                            专属引力人格
+                        </span>
+                        
+                        <!-- Great title -->
+                        <h2 id="result-title" class="text-2xl font-bold text-neutral-900 py-1">
+                            【陪露逆风翻盘】
+                        </h2>
+                        
+                        <!-- MBTI Code -->
+                        <div class="inline-flex items-center px-4 py-1.5 bg-neutral-900 text-white font-mono text-lg rounded shadow-none tracking-[0.15em]">
+                            <span id="result-code">SACW</span>
+                        </div>
+                    </div>
+
+                    <!-- Dimension Bars -->
+                    <div class="mt-8 space-y-4">
+                        <h4 class="text-[10px] font-medium text-neutral-400 tracking-wider text-center uppercase">四维引力磁场矩阵</h4>
+                        
+                        <!-- Dimension 1: S vs G -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] tracking-wider text-neutral-500">
+                                <span>事业批 (S)</span>
+                                <span>生活粉 (G)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="bar-s-pct" class="text-[9px] font-mono text-neutral-800 w-8 text-right">50%</span>
+                                <div class="flex-grow h-1.5 bg-neutral-100 rounded-full overflow-hidden flex border border-neutral-200">
+                                    <div id="bar-s-fill" class="h-full bg-neutral-900" style="width: 50%"></div>
+                                    <div id="bar-g-fill" class="h-full bg-neutral-200" style="width: 50%"></div>
+                                </div>
+                                <span id="bar-g-pct" class="text-[9px] font-mono text-neutral-500 w-8">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Dimension 2: A vs M -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] tracking-wider text-neutral-500">
+                                <span>高产大佬 (A)</span>
+                                <span>快乐围观 (M)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="bar-a-pct" class="text-[9px] font-mono text-neutral-800 w-8 text-right">50%</span>
+                                <div class="flex-grow h-1.5 bg-neutral-100 rounded-full overflow-hidden flex border border-neutral-200">
+                                    <div id="bar-a-fill" class="h-full bg-neutral-900" style="width: 50%"></div>
+                                    <div id="bar-m-fill" class="h-full bg-neutral-200" style="width: 50%"></div>
+                                </div>
+                                <span id="bar-m-pct" class="text-[9px] font-mono text-neutral-500 w-8">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Dimension 3: C vs D -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] tracking-wider text-neutral-500">
+                                <span>氪金消费 (C)</span>
+                                <span>数据控评 (D)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="bar-c-pct" class="text-[9px] font-mono text-neutral-800 w-8 text-right">50%</span>
+                                <div class="flex-grow h-1.5 bg-neutral-100 rounded-full overflow-hidden flex border border-neutral-200">
+                                    <div id="bar-c-fill" class="h-full bg-neutral-900" style="width: 50%"></div>
+                                    <div id="bar-d-fill" class="h-full bg-neutral-200" style="width: 50%"></div>
+                                </div>
+                                <span id="bar-d-pct" class="text-[9px] font-mono text-neutral-500 w-8">50%</span>
+                            </div>
+                        </div>
+
+                        <!-- Dimension 4: W vs E -->
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-[10px] tracking-wider text-neutral-500">
+                                <span>热血唯粉 (W)</span>
+                                <span>和平专注 (E)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="bar-w-pct" class="text-[9px] font-mono text-neutral-800 w-8 text-right">50%</span>
+                                <div class="flex-grow h-1.5 bg-neutral-100 rounded-full overflow-hidden flex border border-neutral-200">
+                                    <div id="bar-w-fill" class="h-full bg-neutral-900" style="width: 50%"></div>
+                                    <div id="bar-e-fill" class="h-full bg-neutral-200" style="width: 50%"></div>
+                                </div>
+                                <span id="bar-e-pct" class="text-[9px] font-mono text-neutral-500 w-8">50%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Highlight Quote Banner -->
+                    <div class="mt-6 p-4 rounded-lg bg-neutral-50 border border-neutral-200">
+                        <p id="result-slogan" class="text-center font-medium text-neutral-800 text-xs tracking-wide">
+                            扛剧女王由我托举，黑粉通稿由我荡平！
+                        </p>
+                    </div>
+
+                    <!-- Portrait Description -->
+                    <div class="mt-6 space-y-2">
+                        <h4 class="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">
+                            引力画像
+                        </h4>
+                        <p id="result-desc" class="text-xs text-neutral-600 leading-relaxed text-justify bg-neutral-50 p-4 rounded-lg border border-neutral-200">
+                            露圈顶级硬核死忠。在你的追星世界里，赵露思是绝对的搞事业大女主，所有剧是你的底气。你具备极强的饭圈行动力：有审美能高质二创，有钱包出代言或 RDD 上新时疯狂清空购物车，遇到职黑带节奏，更能有理有据正面硬刚。从她低谷期一路死守到现在的顶峰，你是最长情、最坚固的底气。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="pt-2">
+                    <button id="btn-restart" class="w-full py-3 rounded-lg border border-neutral-900 text-neutral-900 font-medium text-xs tracking-widest hover:bg-neutral-50 active:scale-95 transition-all text-center">
+                        重新测试
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FOOTER BR和ING -->
+        <footer class="pb-6 px-6 text-center z-10">
+            <span class="text-[10px] text-neutral-400 tracking-[0.15em] uppercase">
+                For Love
+            </span>
+        </footer>
+    </div>
+
+    <script>
+        const scores = { S: 0, G: 0, A: 0, M: 0, C: 0, D: 0, W: 0, E: 0 };
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            {
+                id: 1,
+                title: "Q1. 露思近年来从《珠帘玉幕》的端午，到《许我耀眼》极具讨论度的大女主“许妍”，你最被她吸引的点是？",
+                options: [
+                    { text: "A. 搞事业的绝对野心。许妍的智性成熟风和精湛演技，手握爆款正剧让她底气十足。", weights: { S: 2 } },
+                    { text: "B. 戏外她松弛、勇敢的生活态度。看她发和宠物的日常，就觉得被治愈了。", weights: { G: 2 } },
+                    { text: "C. 剧中的穿搭审美。白衬衫加牛仔裤的松弛感、全黑系的职业气场，完全是我的职场穿搭模板。", weights: { S: 1, G: 1 } },
+                    { text: "D. 没特定阶段，她的存在本身就是一种磁场，随缘看看动态就很安心。", weights: { E: 1 } }
+                ]
+            },
+            {
+                id: 2,
+                title: "Q2. 2025新年的时候，露思首次公开分享了自己与疾病斗争并靠公益完成自救的“重生”历程，看到采访时你的心态是？",
+                options: [
+                    { text: "A. 极其心疼，更佩服她的通透与强大！她把经历化作阳光，跟着她学会了不内耗。", weights: { G: 2, E: 1 } },
+                    { text: "B. 变成了热血事业批。内娱太现实，她吃过那么多苦，必须有断层的数据和作品才能立于不败之地。", weights: { S: 2, W: 1 } },
+                    { text: "C. 既然露思通过做公益自救，那我也要全力支持她的助农和公益项目，用实际行动当她的底气。", weights: { D: 2 } },
+                    { text: "D. 只要她新的一年身体健康、开心拍戏，数据和商务都是其次的。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 3,
+                title: "Q3. 当露思身穿 2026 最新春夏定制礼服搭配高奢珠宝亮相大型时尚活动，同时她的自创品牌「RosyDoedian」也发布了即将新出的产品，你会？",
+                options: [
+                    { text: "A. 第一时间转发安利高贵冷艳的红毯高清神图，海外媒体的反馈必须做足排面。", weights: { S: 2 } },
+                    { text: "B. 毫无疑问死守 RDD店铺！抢购最新周边，支持主理人赵姐。", weights: { G: 2, C: 1 } },
+                    { text: "C. 两个都点开，一边存红毯图当壁纸，一边去小红书看姐妹们总结的 RDD 抢购攻略。", weights: { S: 1, G: 1 } },
+                    { text: "D. 都不急，等晚上躺在床上刷超话时，掉落什么就顺手看什么。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 4,
+                title: "Q4. 如果有机会在2026年的今天对露思说一句话，你最想说什么？",
+                options: [
+                    { text: "A. “身体健康第一位，先把状态调整到最佳再进组，期待你下一个荧幕高光！”", weights: { S: 2, E: 1 } },
+                    { text: "B. “RosyDoedian 的新品买到了！照顾好Doe和点点，天天开心最重要！”", weights: { G: 2 } },
+                    { text: "C. “不要理会外界的声音，你投身公益的背影真的很美，我们一直都在。”", weights: { D: 2 } },
+                    { text: "D. “轻舟已过万重山，现在的你无坚不摧，顶峰相见。”", weights: { W: 2 } }
+                ]
+            },
+            {
+                id: 5,
+                title: "Q5. 在看露思的哭戏。例如《星汉灿烂》程少商受委屈、《珠帘玉幕》端午绝望时或者《许我耀眼》许妍接到姥姥的关心电话，情绪瞬间崩溃时，你的共情点通常在？",
+                options: [
+                    { text: "A. 赞叹她的演技层次！眼泪非常有感染力，台词爆发力极强，作为演员她一直在进化。", weights: { S: 2 } },
+                    { text: "B. 纯粹的生理性心疼.感觉那一刻她完全碎了，看完之后立刻去豆瓣给这部剧默默打个五星。", weights: { G: 2, M: 1 } },
+                    { text: "C. 哭戏太绝了，必须立刻截取高光片段，去抖音/小红书上做安利向的卡点视频。", weights: { A: 2 } },
+                    { text: "D. 沉浸在剧情里跟着一起擦眼泪，不怎么混饭圈，默默看完了事。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 6,
+                title: "Q6. 露思在社交平台上分享自己亲自设计的 RDD 新品或者私服穿搭，你关注的焦点是？",
+                options: [
+                    { text: "A. 她的时尚资源和商业价值是不是又断层了？有没有最新的高奢大秀首发？", weights: { S: 2 } },
+                    { text: "B. 她的穿搭公式！她真的很懂普通人怎么穿显高、显智性，给我的日常通勤提供了无数灵感。", weights: { G: 2 } },
+                    { text: "C. 别说了，链接甩过来，我要去下单支持，把店铺的带货数据做漂亮。", weights: { C: 2 } },
+                    { text: "D. 默默存图，感叹一句“我女真美”，但自己不一定买，纯当电子榨菜看。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 7,
+                title: "Q7. 露思官宣了新剧即将开机，在最新开机仪式图或出发图出来后，你最先做的是？",
+                options: [
+                    { text: "A. 迅速存下原图，开始熟练地调色、修图、去水印，或者构思长文安利词条。", weights: { A: 2 } },
+                    { text: "B. 在小红书乱逛，寻找各路露圈大佬掉落的高清精修图，一边尖叫一边疯狂塞满相册。", weights: { M: 2 } },
+                    { text: "C. 紧盯控评组的指令，把提前准备好的安利文案复制黏贴到各大评论区前排。", weights: { D: 2 } },
+                    { text: "D. 顺手点个赞，转头去重温她以前的剧或Vlog，默默等待新剧那天。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 8,
+                title: "Q8. 当你在超话看到有一些刚因为《许我耀眼》入坑的萌新可露丽在求“考古作品或成长历程”时，你会？",
+                options: [
+                    { text: "A. 贴心扔出自己整理的B站二创合集、名场面汇总或者小红书穿搭总结长帖。", weights: { A: 2 } },
+                    { text: "B. 热情地在评论区留下一句：“姐妹去搜XX剧，入股不亏，包你出不来！”", weights: { M: 2 } },
+                    { text: "C. 提醒萌新记得每天去做任务、做热度数据，顺便拉她们进任务群。", weights: { D: 2 } },
+                    { text: "D. 默默路过并点个赞，看别的姐妹热情科普，自己继续潜水。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 9,
+                title: "Q9. 线上有粉丝自发组织为露思的新剧或公益项目制作无偿的应援小卡、明信片，你会怎么参与？",
+                options: [
+                    { text: "A. 积极报名！主动认领美工设计、排版或者视频无偿剪辑，用才华为大家发电。", weights: { A: 2 } },
+                    { text: "B. 积极响应！作为疯狂心动的可露丽，准时去蹲点抢应援，抢到就在社交平台晒图。", weights: { M: 2 } },
+                    { text: "C. 自己出资赞助一部分印刷费或邮费，不出力但一定要出钱把排面撑起来。", weights: { C: 2 } },
+                    { text: "D. 看看就行，对线下实体应援物不太感冒，只专注于线上的作品本身。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 10,
+                title: "Q10. 看到官方发的“年度购物狂欢节”上的战报，赵露思同款的名字断层领先，你的第一成就感来自于？",
+                options: [
+                    { text: "A. “这就是赵姐顶级高奢和个人品牌的商业变现力，用实力堵住黑子的嘴！”", weights: { C: 2, S: 1 } },
+                    { text: "B. “控评直接甩战报封死黑粉的嘴，看对家无能为力又闭麦，爽！”", weights: { D: 2 } },
+                    { text: "C. “太好了，这下影视资源和高奢续约稳了，我女继续走独立大女主花路！”", weights: { S: 2 } },
+                    { text: "D. “我女真棒，今晚必须多吃一碗饭庆祝。去小红书看看有没有姐妹发新产出喽！”", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 11,
+                title: "Q11. 某社交平台上突然出现恶意拉踩通稿，拿我女曾经的旧照或者恶意揣测她身体状况，你会？",
+                options: [
+                    { text: "A. 直接化身铁血战斗粉！小号齐发，带上最新的红毯和生图，去评论区正面硬刚、净化词条。", weights: { W: 2 } },
+                    { text: "B. 第一时间截图保存，直接反手一个举报，并把链接丢进净化器，绝不给黑子眼神。", weights: { W: 1, D: 1 } },
+                    { text: "C. 极其心疼，在粉丝群里跟姐妹们互相安慰，发点露思最新的产出视频互相治愈。", weights: { G: 1, E: 1 } },
+                    { text: "D. 秒切账号直接退出该平台。追星是为了快乐，垃圾营销号休想影响我的心情。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 12,
+                title: "Q12. 对于内娱经常出现的“同期小花拉踩比美”或者“谁才是真正的抗剧顶流”这种引战热搜，你的态度是？",
+                options: [
+                    { text: "A. 绝对寸步不让！收视率、云合播放量、高奢资源全方位砸脸上，必须赢。", weights: { W: 2 } },
+                    { text: "B. 带着姐妹们在前排大度安利自家：“审美各异，各有千秋，多关注赵露思新活动/作品”。", weights: { D: 2 } },
+                    { text: "C. 觉得极其无聊。内娱天天搞这种比赛，不如去刷刷 RDD 又出了什么治愈新品。", weights: { E: 2 } },
+                    { text: "D. 默默点进去吃个瓜，看看别家粉丝撕逼，自己不参与，纯当看戏。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 13,
+                title: "Q13. 你平时刷小红书或短视频平台时，最喜欢看关于露思的哪类视频？",
+                options: [
+                    { text: "A. 影视剧高光演技大赏、大女主搞事业的高燃剪辑。", weights: { S: 2, A: 1 } },
+                    { text: "B. 日常生活 Vlog 切片、和小狗互动的日常、微综艺与碎碎念的松弛感记录。", weights: { G: 2, A: 1 } },
+                    { text: "C. 只要是关于她的视频都看，顺便习惯性地在评论区前排留下安利文案。", weights: { D: 2 } },
+                    { text: "D. 随缘刷到什么看什么，经常在搞笑梗图视频下和可露丽一起哈哈大笑。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 14,
+                title: "Q14. 当你在可露丽粉丝群聊天时，你最常使用的表情包类型是？",
+                options: [
+                    { text: "A. 露思在剧中的霸气名场面截图，或者带着名场面台词的无损图。", weights: { S: 1 } },
+                    { text: "B. 露思日常揉脸、搞怪、或者和 Doe、点点同框的可爱治愈系表情包。", weights: { G: 1 } },
+                    { text: "C. 反黑组催做数据、催净化、或者“战斗打响”的硬核粉丝专用网图。", weights: { W: 1 } },
+                    { text: "D. 各种躺平、咸鱼、等吃瓜、等大触喂饭的沙雕调侃表情包。", weights: { M: 1 } }
+                ]
+            },
+            {
+                id: 15,
+                title: "Q15. 如果要在“花大价钱买一张溢价的线下品牌活动门票”和“拿这个钱去清空几单 RDD 新品支持销量”之间做选择，你会？",
+                options: [
+                    { text: "A. 买活动门票！真金白银换来和她面对面的机会，线下见真人才最治愈。", weights: { C: 2, G: 1 } },
+                    { text: "B. 选清空 RDD 网店！买周边的销量和品牌成长是实打实算在露思自己头上的事业排面。", weights: { C: 2, S: 1 } },
+                    { text: "C. 都不选，钱拿来去支持露思倡导的助农公益，用在更有意义的地方。", weights: { E: 2 } },
+                    { text: "D. 拿这个钱去联系wb里的大粉，无偿赞助她们拿去激励做反黑粉、数据粉的抽奖周边活动。", weights: { A: 1, D: 1 } }
+                ]
+            },
+            {
+                id: 16,
+                title: "Q16. 新剧播完了，各大平台中的露圈里部分可露丽因为剧中的CP线或者番位问题和其他群体产生争执，你会？",
+                options: [
+                    { text: "A. 果断加入战场，列证据、甩收视截图，绝对不能让自家大女主受委屈。", weights: { W: 2 } },
+                    { text: "B. 在wb、小红书发帖号召大家“专注自家，圈地自萌”，多刷演员高光，别给眼神。", weights: { E: 2 } },
+                    { text: "C. 默默去后台把那些故意挑事的账号和链接整理出来，一键提交给净化器。", weights: { D: 2 } },
+                    { text: "D. 不看吵架了，直接去重温露思以前的无争议老剧或者去过现实生活。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 17,
+                title: "Q17. 看到有人在小红书发帖质疑 RDD 的衣服设计风格或定价，你的反应是？",
+                options: [
+                    { text: "A. 亲自出面科普：品牌主打治愈周边和优质用料，主理人自己都常穿，质量能打。", weights: { G: 2, A: 1 } },
+                    { text: "B. 直接晒出自己的多笔订单还有实物上身图，用事实和消费力狠狠打脸质疑者。", weights: { C: 2 } },
+                    { text: "C. 如果对方是恶意黑，直接开撕；如果是中肯建议，则理性看待不予理会。", weights: { W: 1, E: 1 } },
+                    { text: "D. 不参与争论，千金难买我乐意，我自己穿得开心、支持露思就足够了。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 18,
+                title: "Q18. 假设露思在最新发布的Vlog中分享了自己和身边团队一整天的真实工作流，以及对个人品牌上新设计的沟通，看视频时你会？",
+                options: [
+                    { text: "A. 边看边做细致的视频切片和穿搭单品盘点，第一时间整理长帖去小红书帮她安利种草。", weights: { A: 2 } },
+                    { text: "B. 纯粹快乐享受，反复回放她和狗狗、朋友互动的搞笑可爱镜头，截图保存新一轮电子榨菜。", weights: { M: 2 } },
+                    { text: "C. 看到主理人对细节要求那么高，更期待下一次新剧的剧组状态和个人品牌了，拼事业大女主真好。", weights: { S: 2 } },
+                    { text: "D. 关注她工作间隙的放松状态，希望她能在紧凑的节奏里照顾好自己，平稳充实就好。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 19,
+                title: "Q19. 新剧官宣时，有其他演员的粉丝因为番位问题在评论区阴阳怪气，你的反击方式是？",
+                options: [
+                    { text: "A. 甩出官方盖章、腾讯/优酷等平台的断层一号位认证和过往抗剧实绩，底气拉满。", weights: { S: 2, W: 1 } },
+                    { text: "B. 懒得跟他们废话，直接用赵露思的单人安利大字报和控评图把那些恶评死死压下去。", weights: { D: 2 } },
+                    { text: "C. 不跟糊咖撕逼，给他们眼神就是给他们热度，专注期待自家大女主的表现。", weights: { E: 2 } },
+                    { text: "D. 切小号正面硬刚，把对方不理智的言论反弹回去，气势上绝对不能输。", weights: { W: 2 } }
+                ]
+            },
+            {
+                id: 20,
+                title: "Q20. 露思在深夜突然发了一条搞怪的自拍，并配文和大家说晚安，你当时的状态是？",
+                options: [
+                    { text: "A. 熬夜狂喜！立刻在评论区互动，跟姐妹们疯狂讨论我女的绝美素颜。", weights: { M: 2 } },
+                    { text: "B. 把自拍里的私服和背景小物件放大10倍，迅速扒出品牌和同款，方便大家种草。", weights: { A: 2 } },
+                    { text: "C. 赶紧去评论区前排抢占位置控评，把晚安情话和暖心安利文案安排上。", weights: { D: 2 } },
+                    { text: "D. 温柔地回一句“晚安宝贝，做个好梦”，然后心满意足地放下手机去睡觉。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 21,
+                title: "Q21. 每当你现实生活中遇到极其内耗、压力极大的至暗时刻，你通常会选择怎么通过露思来治愈自己？",
+                options: [
+                    { text: "A. 重温她战胜疾病后的采访，用她的重生历程给予自己无坚不摧的力量。", weights: { G: 2 } },
+                    { text: "B. 疯狂下单买几件 RDD 的治愈新品，或者看看她和Doe点点的温馨互动视频。", weights: { G: 1, C: 1 } },
+                    { text: "C. 去 B 站、抖音看她演的程少商、端午或许妍等角色的搞事业高燃剪辑，看完瞬间燃起搞钱的野心。", weights: { S: 2 } },
+                    { text: "D. 在粉丝群和可露丽姐妹们聊天、抢红包、存表情包，在温馨的粉丝氛围里放松自己。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 22,
+                title: "Q22. 当后援会号召进行一项长期的、无偿的剧集日常净化任务，需要每天打卡，你会？",
+                options: [
+                    { text: "A. 雷打不动每天定闹钟参与，数据女工从不认输，必须给演员露思最好的搜索词条。", weights: { D: 2 } },
+                    { text: "B. 有空就做，没空就算了，拒绝被数据KPI绑架，快乐散粉主打一个随意。", weights: { M: 2 } },
+                    { text: "C. 自己可能坚持不下来，但会在社交平台发帖抽奖，赞助那些每天坚持打卡的姐妹。", weights: { C: 2 } },
+                    { text: "D. 不参与这种强制性任务，更喜欢用长评、产出或者自发安利的方式来表达爱。", weights: { A: 2 } }
+                ]
+            },
+            {
+                id: 23,
+                title: "Q23. 露思被选为某大牌高奢的全球形象大使后，黑子嘲笑她的时尚感不够高级，你会？",
+                options: [
+                    { text: "A. 直接把品牌总监对露思的超高赞誉英文原文翻译出来，配合断层带货战报狠狠打脸。", weights: { A: 2, W: 1 } },
+                    { text: "B. 金主爸爸既然选了全球大使就说明了一切，直接去品牌官博下刷排面控评，不理会酸鸡。", weights: { D: 2 } },
+                    { text: "C. 直接开撕！把黑子家正主的野鸡资源拉出来对比，让他们知道什么叫降维打击。", weights: { W: 2 } },
+                    { text: "D. 大牌高奢争着抢着合作就是底气，多去抢两件 RDD 的新品，别给黑子眼神和热度。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 24,
+                title: "Q24. 你认为自己最符合以下哪种典型的可露丽性格特质？",
+                options: [
+                    { text: "A. 事业心极强！跟着赵露思一路逆风翻盘，在现实中也是个努力搞钱的野心派。", weights: { S: 2 } },
+                    { text: "B. 时尚、热爱生活。喜欢琢磨穿搭和萌宠，把日子过得像露思的日常一样热血沸腾。", weights: { G: 2 } },
+                    { text: "C. 行动力爆棚！不管做图剪辑还是反黑控评，只要组织一句话，立刻爆肝执行。", weights: { A: 1, D: 1 } },
+                    { text: "D. 温柔而长情。不爱出风头，也不喜欢社交，只是在一个角落默默爱了她好多年。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 25,
+                title: "Q25. 当你在路人口中听到对露思演技的客观夸赞时，你的心理活动通常是？",
+                options: [
+                    { text: "A. 骄傲抬头！我们演员赵露思本来就是断层抗剧大女主，实力是最好的公关。", weights: { S: 2 } },
+                    { text: "B. 欣慰至极，她付出的所有努力和曾经吃过的苦，终于被更多人看到了。", weights: { G: 2 } },
+                    { text: "C. 太好了，赶紧把这个路人的好评截图发到社交平台，激励姐妹们继续努力做数据。", weights: { D: 2 } },
+                    { text: "D. 内心毫无波澜甚至想笑，因为我知道她未来还会带来更大的惊喜，这只是基操。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 26,
+                title: "Q26. 假设露思的自创品牌 RDD 宣布要举办一次线下的快闪店及公益助农活动，你会？",
+                options: [
+                    { text: "A. 天涯海角也要冲过去！去现场排队支持，给主理人赵姐拉满线下排面。", weights: { G: 2, C: 1 } },
+                    { text: "B. 去不了现场，但会在网上疯狂抢购快闪同款周边，用钱包隔空表达支持。", weights: { C: 2 } },
+                    { text: "C. 在各个社交平台上当免费的“大喇叭”，疯狂发帖写攻略，安利路人去打卡。", weights: { A: 2 } },
+                    { text: "D. 默默关注官方返图，看到快闪店里Doe 点点的卡通形象觉得可爱死啦。", weights: { M: 2 } }
+                ]
+            },
+            {
+                id: 27,
+                title: "Q27. 饭圈偶尔会因为各种小事变得非常焦虑和浮躁，当你感到有些疲惫时，你会选择？",
+                options: [
+                    { text: "A. 立刻断网，去过好自己的现实生活。相信轻舟已过万重山，她和我们都会更好。", weights: { E: 2 } },
+                    { text: "B. 寻找露圈里那些专注搞事业、发收视战报的数据贴，看完立刻重新充满干劲。", weights: { S: 2 } },
+                    { text: "C. 寻找大佬剪的搞笑沙雕视频或温情治愈向群像，在纯粹的快乐里找回初心。", weights: { M: 2 } },
+                    { text: "D. 疯狂下一单 RDD 的新品服饰，用消费带来的多巴胺和对品牌的支持完成自我治愈。", weights: { C: 2 } }
+                ]
+            },
+            {
+                id: 28,
+                title: "Q28. 在新剧即将播出的宣发期，后援会号召大家去各大平台撰写剧评和小红书安利长文，你会？",
+                options: [
+                    { text: "A. 文思泉涌！发挥自己极强的文字功底，深度解析角色内核，写出爆款安利长帖。", weights: { A: 2 } },
+                    { text: "B. 自己不会写，但会熟练地把大粉写的神仙剧评转发到各大公共平台去扩散。", weights: { M: 2 } },
+                    { text: "C. 紧盯这些安利贴的评论区，疯狂点赞、留言互动，把评论区热度顶上去。", weights: { D: 2 } },
+                    { text: "D. 默默开个静音播放器给新剧刷着播放量，自己安安静静当个追剧的观众。", weights: { S: 1, E: 1 } }
+                ]
+            },
+            {
+                id: 29,
+                title: "Q29. 黑粉为了防爆露思的新剧，在豆瓣和各平台疯狂刷恶意一星评分和断章取义的黑评，你会？",
+                options: [
+                    { text: "A. 热血反击！开辟澄清专区，列出高清角色对线证据，有理有据把黑通稿撕碎。", weights: { W: 2 } },
+                    { text: "B. 号召所有可露丽姐妹齐心协力去刷高赞好评、打五星，用绝对的数量优势净化评分区。", weights: { D: 2 } },
+                    { text: "C. 直接向官方举报黑粉账号，不和疯狗对线，用最正规的手段维护正版利益。", weights: { W: 1, D: 1 } },
+                    { text: "D. 相信真正的好剧路人心里有数，黑水根本防爆不了真爆款，稳住心态不内耗。", weights: { E: 2 } }
+                ]
+            },
+            {
+                id: 30,
+                title: "Q30. 最后，作为2026年陪伴她走过至暗、见证重生的可露丽，你认为你和赵露思最完美的距离是？",
+                options: [
+                    { text: "A. 她站在荧幕和舞台的顶峰闪闪发亮，我坐在台下和数据台前，誓死托举她的王座。", weights: { S: 2, W: 1 } },
+                    { text: "B. 她用真诚的生活态度和RDD 治愈我，我用消费力和不离不弃的陪伴滋养她。", weights: { G: 2, C: 1 } },
+                    { text: "C. 共享一种“反内耗”的人生态度，轻舟已过万重山，在各自的领域顶峰相见。", weights: { E: 2 } },
+                    { text: "D. 无需多言，她是我的精神图腾。她的名字就是我平凡日子里的一束元气微光。", weights: { M: 2 } }
+                ]
+            }
+        ];
+
+        const personalityMap = {
+            "SACW": {
+                title: "【陪露逆风翻盘】",
+                slogan: "扛剧女王由我托举，黑粉通稿由我荡平！",
+                desc: "露圈顶级硬核死忠。在你的追星世界里，赵露思是绝对的搞事业大女主，所有剧是你的底气。你具备极强的饭圈行动力：有审美能高质二创，有钱包出代言或 RDD 上新时疯狂清空购物车，遇到职黑带节奏，更能有理有据正面硬刚。从她低谷期一路死守到现在的顶峰，你是最长情、最坚固的底气。"
+            },
+            "SACE": {
+                title: "【高贵隐居唯】",
+                slogan: "用极致的浪漫与真金白银，专注自家花路。",
+                desc: "走高质量路线 of 独立唯粉。对露思的演员业务能力有极高信仰，热衷于在小红书或B站掉落神仙级别的二创卡点视频。有新代言或 RDD 联名上新时默默清空购物车支持，但你极其厌恶任何饭圈的撕逼与内耗，遇到冲突直接拉黑举报，退回自己的创作世界，主打一个圈地自萌。"
+            },
+            "SADW": {
+                title: "【数据战神】",
+                slogan: "数据是我的武器，露的王座由我来守。",
+                desc: "标准的“事业批”和数据组核心人物。新剧播出时化身没有感情的刷数据机器，爆肝刷云合播放量和热度，产出方向多为路人秒懂的安利大字报。一旦有人故意防爆或黑角色，你清晰的逻辑就是最狠的反黑武器，死守赵露思的王座。"
+            },
+            "SADE": {
+                title: "【佛系剪刀手】",
+                slogan: "大爱无声，只愿看你在荧幕顶峰闪闪发亮。",
+                desc: "隐居在各大社交平台里的技术流角色粉。对任何饭圈的小团体斗争和八卦都毫无兴趣，遇到节奏秒切账号。日常低调地跟着大部队做做基础剧播数据，但私底下其实是个不折不扣的大佬，喜欢用大银幕质感的调色和踩点，把赵露思所有角色的高光时刻剪成出圈神作。"
+            },
+            "SMCW": {
+                title: "【氪金硬核妈】",
+                slogan: "代言新品买爆，谁也别想动我家女高！",
+                desc: "典型的技术流废柴，修图写小作文统统躺平，靠存表情包度日。但在花钱和护短上，你是绝对的大姐大！把露思当亲女儿疼，全新高奢或 RDD 网店上新直接疯狂扫货。一旦看营销号拿生图恶意拉踩，战斗基因一秒觉醒，直接撕到黑子怀疑人生。"
+            },
+            "SMCE": {
+                title: "【看剧富婆】",
+                slogan: "不争不抢不干活，只为搞事业大女主氪千金。",
+                desc: "你自认是个“技术流废柴”，不会剪辑修图，日常在超话靠“等喂饭”和疯狂存姐妹们产出的表情包度日。你抗拒被任何KPI打榜绑架，遇到摩擦直接划走。但每当露思有了大牌代言或者 RDD 出新品，你总是默默清空购物车，真金白银贡献惊人销量。你用最平静、最阔绰的方式，做她最长情事业剧粉。"
+            },
+            "SMDW": {
+                title: "【靠数据说话】",
+                slogan: "播放量不停，控评不止，筑起最坚固的护城河。",
+                desc: "你视露思为内娱最让人心疼、也最争气的断层花旦，眼里容不得沙子。新剧上线时，云合和猫眼数据你天天盯着；一旦有人在公共平台上恶意抹黑或破坏她的路人缘，你必将带上官方澄清大字报和硬核收视数据，用事实给对方重拳出击，是露圈最靠得住的护城河。"
+            },
+            "SMDE": {
+                title: "【长情剧粉】",
+                slogan: "静静远远看着你，在有你的荧幕里寻找微光。",
+                desc: "露圈中最庞大、最温柔的沉默大多数。抗拒一切饭圈条条框框，主打一个Peace & Love。自认是个普通的散粉，不擅长产出，但你贡献了她从早期网剧到大荧幕每一部作品的VIP正版播放量。每天晚上去超话雷打不动签到打卡，踏实又长情。"
+            },
+            "GACW": {
+                title: "【硬核闺蜜】",
+                slogan: "平时笑她自拍搞怪，外人黑她直接要命！",
+                desc: "把逆风追星当成对抗现实内耗的快乐源泉。你最着迷的是露思治愈的生活 Vlog 以及和Doe、点点的互动日常。你极有网感，最爱产出她的搞笑表情包和RDD 开箱切片。但你同时也是个高能富婆，RDD 同款买起来眼睛都不眨。外人要是敢嘲笑她，你立刻铁血附体，用最笋、最犀利的逻辑把对方怼到无地自容。"
+            },
+            "GACE": {
+                title: "【种草闺蜜】",
+                slogan: "你负责分享元气生活，我负责为你疯狂买单。",
+                desc: "追星圈里活得最精致、最快乐的那批人。完全把露思当成了自己的生活美学风向标，疯狂沉迷于她的小红书私服和日常Vlog。享受用金钱交换快乐的过程，日常 RDD 衣服包包和联名好物疯狂收割，还会贴心地产出各种穿搭拆解长帖和RDD 网店开箱/抢购攻略，不混圈、不撕逼。"
+            },
+            "GADW": {
+                title: "【网感大师】",
+                slogan: "梗图不停，打榜不止，陪赵露思一起大笑。",
+                desc: "露圈里的“灵魂活跃分子”和氛围感大师。比起高冷的事业蓝图，你更爱露思那股接地气的邻家妹妹元气，产出的安利段子通常幽默风趣、自带爆款网感。日常爆肝打榜控评，把露思当骨灰级闺蜜，遇到黑粉刁难，总能用最搞笑、最笋的段子强力反黑。"
+            },
+            "GADE": {
+                title: "【治愈派】",
+                slogan: "在日常里挖掘美好，轻舟已过万重山。",
+                desc: "追星不图她出名，只图她天天开心。深深被她和宠物（Doe、点点）的温馨日常以及战胜疾病后的强大内心所治愈。是露圈里低调的避世艺术家，热衷于挖掘 Vlog 里的一秒细节并变成治愈系卡点视频。默默做数据、打榜签到，但饭圈一旦有撕逼苗头你拔腿就跑。"
+            },
+            "GMCW": {
+                title: "【护短党】",
+                slogan: "跟着赵露思拒绝内耗，我的快乐由我自己守护！",
+                desc: "自己不做技术产出，日常就是看着露思的生活视频和宠物照片哈哈大笑、疯狂存表情包的“快乐哈哈党”，丝丝毫不内耗。虽然嘴上说着“躺平”，但 RDD 每次上新的衣服或周边你都直接端盒买爆，且极度护短，外人敢惹她你绝对秒切小号上线疯狂输出对线。"
+            },
+            "GMCE": {
+                title: "【松弛生活收藏家】",
+                slogan: "穿上她设计的浪漫，陪她一起把生活过成诗。",
+                desc: "整个露圈里追星最毫无压力、活得最通透的快乐源泉。极其抗拒任何打榜、控评等数据任务，饭圈撕逼在你眼里全是云烟。每天最大的快乐就是看露思晒猫狗、刷 RDD 的新品视频。对于品牌每次上新你都直接真金白银掏钱支持。你不是在追星，你是在为一种“健康、爱宠物、爱生活”的松弛感买单，你已经学到了露思强大的自救与反内耗精神，把自己的生活过成了艺术。"
+            },
+            "GMDW": {
+                title: "【核心气氛组】",
+                slogan: "做最稳的数据，开最野的玩笑，死守赵露思的路人缘。",
+                desc: "粉群里当之无愧的“气氛组”，最爱在评论区前排用露思的生活梗和大家聊天。虽然不做复杂的修图剪视频，但在打榜、反黑、控评上，你是手速最快的那批核心行动派。你太喜欢这个真实不做作的女孩了，所以当有人在公共平台上恶意抹黑、破坏她的路人缘时，你会义无反顾冲在前排死死护住她。"
+            },
+            "GMDE": {
+                title: "【随缘陪伴党】",
+                slogan: "你在台上清醒强大，我在台下随缘打卡。",
+                desc: "最随缘、也活得最舒服的陪伴型粉丝。完全不理会饭圈的任何死板规矩和KPI 大榜压力，把露思当成平行世界里一个熟悉的老朋友。每天按时去超话签个到、看看她最新和 Doe、点点互动的照片就能开心一整天。学着露思那种通透的“反内耗”心态一笑了之，快乐至上。"
+            }
+        };
+
+        // Explicit DOM declaration to guarantee global compatibility
+        const screenWelcome = document.getElementById('screen-welcome');
+        const screenQuiz = document.getElementById('screen-quiz');
+        const screenLoading = document.getElementById('screen-loading');
+        const screenResult = document.getElementById('screen-result');
+
+        const btnStart = document.getElementById('btn-start');
+        const btnRestart = document.getElementById('btn-restart');
+
+        const progressText = document.getElementById('quiz-progress-text');
+        const progressFill = document.getElementById('quiz-progress-fill');
+        const questionIdEl = document.getElementById('quiz-question-id');
+        const questionTitleEl = document.getElementById('quiz-question-title');
+        const optionsContainer = document.getElementById('quiz-options');
+
+        const resultTitle = document.getElementById('result-title');
+        const resultCode = document.getElementById('result-code');
+        const resultSlogan = document.getElementById('result-slogan');
+        const resultDesc = document.getElementById('result-desc');
+
+        const barSFill = document.getElementById('bar-s-fill');
+        const barGFill = document.getElementById('bar-g-fill');
+        const barSPct = document.getElementById('bar-s-pct');
+        const barGPct = document.getElementById('bar-g-pct');
+
+        const barAFill = document.getElementById('bar-a-fill');
+        const barMFill = document.getElementById('bar-m-fill');
+        const barAPct = document.getElementById('bar-a-pct');
+        const barMPct = document.getElementById('bar-m-pct');
+
+        const barCFill = document.getElementById('bar-c-fill');
+        const barDFill = document.getElementById('bar-d-fill');
+        const barCPct = document.getElementById('bar-c-pct');
+        const barDPct = document.getElementById('bar-d-pct');
+
+        const barWFill = document.getElementById('bar-w-fill');
+        const barEFill = document.getElementById('bar-e-fill');
+        const barWPct = document.getElementById('bar-w-pct');
+        const barEPct = document.getElementById('bar-e-pct');
+
+        function initApp() {
+            // Reset scores
+            for (let key in scores) {
+                scores[key] = 0;
+            }
+            currentQuestionIndex = 0;
+            
+            // UI Routing setup
+            showScreen(screenWelcome);
+        }
+
+        function showScreen(targetScreen) {
+            const screens = [screenWelcome, screenQuiz, screenLoading, screenResult];
+            screens.forEach(s => {
+                if (s === targetScreen) {
+                    s.classList.remove('hidden');
+                    s.classList.add('fade-in');
+                } else {
+                    s.classList.add('hidden');
+                    s.classList.remove('fade-in');
+                }
+            });
+        }
+
+        function renderQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            const totalQuestions = questions.length;
+            const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progressText.innerText = `进度: ${currentQuestionIndex + 1} / ${totalQuestions}`;
+            progressFill.style.width = `${progressPercentage}%`;
+
+            questionIdEl.innerText = `QUESTION ${String(currentQuestionIndex + 1).padStart(2, '0')}`;
+            questionTitleEl.innerText = currentQuestion.title;
+
+            optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-lg glass-btn text-xs sm:text-sm text-neutral-700 leading-relaxed active:scale-[0.98] transition-all flex items-start gap-3 border border-neutral-200 hover:border-neutral-800";
+                
+                const prefix = opt.text.substring(0, 2);
+                const actualText = opt.text.substring(2);
+
+                btn.innerHTML = `
+                    <span class="flex-shrink-0 w-6 h-6 rounded bg-neutral-100 text-neutral-800 font-mono text-xs flex items-center justify-center font-semibold">
+                        ${prefix.replace('.', '')}
+                    </span>
+                    <span class="font-normal text-neutral-600">${actualText}</span>
+                `;
+                
+                btn.addEventListener('click', () => h和leOptionSelection(opt.weights));
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function h和leOptionSelection(weights) {
+            for (let dimension in weights) {
+                if (scores.hasOwnProperty(dimension)) {
+                    scores[dimension] += weights[dimension];
+                }
+            }
+
+            optionsContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    renderQuestion();
+                    optionsContainer.classList.remove('fade-out');
+                    optionsContainer.classList.add('fade-in');
+                    setTimeout(() => optionsContainer.classList.remove('fade-in'), 400);
+                } else {
+                    triggerCalculations();
+                }
+            }, 300);
+        }
+
+        function triggerCalculations() {
+            showScreen(screenLoading);
+
+            setTimeout(() => {
+                renderResult();
+            }, 2500);
+        }
+
+        function renderResult() {
+            const dim1 = scores.S >= scores.G ? 'S' : 'G';
+            const dim2 = scores.A >= scores.M ? 'A' : 'M';
+            const dim3 = scores.C >= scores.D ? 'C' : 'D';
+            const dim4 = scores.W >= scores.E ? 'W' : 'E';
+
+            const userCode = `${dim1}${dim2}${dim3}${dim4}`;
+            const finalPersonality = personalityMap[userCode] || personalityMap["SACW"];
+
+            resultTitle.innerText = finalPersonality.title;
+            resultCode.innerText = userCode;
+            resultSlogan.innerText = finalPersonality.slogan;
+            resultDesc.innerText = finalPersonality.desc;
+
+            const safePercent = (valA, valB) => {
+                const total = valA + valB;
+                if (total === 0) return 50;
+                return Math.round((valA / total) * 100);
+            };
+
+            const sPct = safePercent(scores.S, scores.G);
+            const gPct = 100 - sPct;
+
+            const aPct = safePercent(scores.A, scores.M);
+            const mPct = 100 - aPct;
+
+            const cPct = safePercent(scores.C, scores.D);
+            const dPct = 100 - cPct;
+
+            const wPct = safePercent(scores.W, scores.E);
+            const ePct = 100 - wPct;
+
+            barSFill.style.width = `${sPct}%`;
+            barGFill.style.width = `${gPct}%`;
+            barSPct.innerText = `${sPct}%`;
+            barGPct.innerText = `${gPct}%`;
+
+            barAFill.style.width = `${aPct}%`;
+            barMFill.style.width = `${mPct}%`;
+            barAPct.innerText = `${aPct}%`;
+            barMPct.innerText = `${mPct}%`;
+
+            barCFill.style.width = `${cPct}%`;
+            barDFill.style.width = `${dPct}%`;
+            barCPct.innerText = `${cPct}%`;
+            barDPct.innerText = `${dPct}%`;
+
+            barWFill.style.width = `${wPct}%`;
+            barEFill.style.width = `${ePct}%`;
+            barWPct.innerText = `${wPct}%`;
+            barEPct.innerText = `${ePct}%`;
+
+            showScreen(screenResult);
+        }
+
+        // Safe, explicit binding
+        btnStart.addEventListener('click', () => {
+            showScreen(screenQuiz);
+            renderQuestion();
+        });
+
+        btnRestart.addEventListener('click', () => {
+            initApp();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+    </script>
+</body>
+</html>
